@@ -1,5 +1,7 @@
-WAIT
-A minimalist web tool designed to help manage intrusive thoughts, track pause intervals, and ground yourself during OCD spikes.
+WAIT 
+
+
+ A minimalist web tool designed to help manage intrusive thoughts, track pause intervals, and ground yourself during OCD spikes.
 
 Check out the live app
 
