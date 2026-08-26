@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>wait</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="wall" id="wall">
+
+  <div class="poster p-title" id="posterTitle">
+    <div class="tape"></div>
+    <h1>just<br>wait</h1>
+    <p>for when your brain wont shut up</p>
+  </div>
+
+  <div class="poster p-pin" id="pinPoster">
+    <div class="tape r"></div>
+    <p>pin (optional)</p>
+    <input type="password" id="pinInput" placeholder="whatever" maxlength="8" />
+    <div class="row" style="margin-top:6px">
+      <button type="button" id="pinBtn" style="font-size:0.85rem;padding:6px">set</button>
+    </div>
+  </div>
+
+  <div class="poster p-main" id="mainPoster">
+    <div class="tape"></div>
+    <div class="tape r"></div>
+    <h2>its happening again</h2>
+
+    <div id="setupView">
+      <label>how bad rn <span id="anxVal">5</span>/10</label>
+      <div class="slider-row">
+        <input type="range" id="anxiety" min="1" max="10" value="5" />
+      </div>
+      <label>kind of thing</label>
+      <select id="tag">
+        <option value="checking">checking</option>
+        <option value="washing">washing</option>
+        <option value="ordering">making it perfect</option>
+        <option value="thought">stupid thought loop</option>
+        <option value="other">idk / other</option>
+      </select>
+      <label>force myself to wait</label>
+      <select id="mins">
+        <option value="5">5 min</option>
+        <option value="10" selected>10 min</option>
+        <option value="15">15 min</option>
+        <option value="30">30 min</option>
+      </select>
+      <label>what it says will go wrong</label>
+      <textarea id="fearNote" rows="2" placeholder="if i dont do it..."></textarea>
+      <div class="row">
+        <button type="button" id="startBtn" class="danger">start waiting</button>
+      </div>
+    </div>
+
+    <div id="timerView" class="hidden">
+      <p style="margin-bottom:6px">dont do the thing. just sit here.</p>
+      <div id="clock">10:00</div>
+      <label>still how bad: <span id="anxNowVal">5</span></label>
+      <input type="range" id="anxietyNow" min="1" max="10" value="5" />
+      <div class="row">
+        <button type="button" id="resistBtn" class="ok">i held off</button>
+        <button type="button" id="gaveBtn" class="ghost">did it anyway</button>
+      </div>
+      <button type="button" id="cancelBtn" class="ghost" style="width:100%;margin-top:8px;font-size:0.9rem">nevermind</button>
+    </div>
+
+    <div id="doneView" class="hidden">
+      <p id="doneMsg" style="font-size:1.15rem;margin-bottom:8px"></p>
+      <p id="doneDetail" style="font-size:0.95rem;opacity:0.85;margin-bottom:10px"></p>
+      <button type="button" id="againBtn" style="width:100%">ok</button>
+    </div>
+  </div>
+
+  <div class="poster p-timer hidden" id="timerPoster">
+    <div class="tape"></div>
+    <p>still going</p>
+    <div class="big" id="clock2">10:00</div>
+  </div>
+
+  <div class="poster p-breathe" id="posterBreathe">
+    <div class="tape r"></div>
+    <h3>breathe ig</h3>
+    <div class="breath-circle" id="breathCircle"></div>
+    <p style="font-size:0.85rem;text-align:center">in · hold · out</p>
+    <button type="button" id="breathBtn" style="width:100%;margin-top:6px;font-size:0.9rem">go</button>
+  </div>
+
+  <div class="poster p-distract" id="posterDistract">
+    <div class="tape"></div>
+    <h3>think about this instead</h3>
+    <p id="distractText" style="min-height:48px;margin:8px 0;font-size:1rem">hit the button</p>
+    <button type="button" id="distractBtn" style="width:100%">another one</button>
+  </div>
+
+  <div class="poster p-note" id="posterNote">
+    <div class="tape"></div>
+    <p><strong>note to self</strong></p>
+    <p id="reminderText">it always feels permanent until it isnt</p>
+    <textarea id="reminderEdit" rows="3" class="hidden"></textarea>
+    <button type="button" id="editReminder" style="margin-top:6px;font-size:0.8rem;padding:4px 8px">change</button>
+  </div>
+
+  <div class="poster p-log" id="recentPoster">
+    <div class="tape r"></div>
+    <h3>lately</h3>
+    <div id="recentList"><p style="opacity:0.6">empty</p></div>
+  </div>
+
+  <div class="poster p-history" id="posterHistory">
+    <div class="tape"></div>
+    <h2>the pile</h2>
+    <p style="font-size:0.9rem;margin:4px 0 10px;opacity:0.8">only on this phone/computer. not online.</p>
+    <div id="stats" style="margin-bottom:10px;font-size:0.95rem"></div>
+    <div id="historyList"></div>
+    <hr style="margin:14px 0;border:none;border-top:2px dashed #aaa" />
+    <h3>dump it here</h3>
+    <textarea id="dump" rows="3" placeholder="type the thought and leave it"></textarea>
+    <div class="row">
+      <button type="button" id="dumpSave">leave it</button>
+      <button type="button" id="dumpClear" class="ghost">erase box</button>
+    </div>
+    <div id="dumpList" style="margin-top:8px;font-size:0.85rem"></div>
+    <div class="row" style="margin-top:12px">
+      <button type="button" id="exportBtn" class="ghost" style="font-size:0.85rem">save a copy</button>
+      <button type="button" id="clearAllBtn" class="ghost" style="font-size:0.85rem">wipe everything</button>
+    </div>
+  </div>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
