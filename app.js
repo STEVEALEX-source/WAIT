@@ -180,74 +180,87 @@
     };
   }
 
-  // solid drag for every poster
+  // drag that actually works
   function enableDrag() {
     var wall = document.getElementById("wall");
     if (!wall) return;
 
     var posters = wall.querySelectorAll(".poster");
     for (var i = 0; i < posters.length; i++) {
-      (function (el) {
-        // force absolute so they can float
-        if (getComputedStyle(el).position !== "absolute") {
-          var wallRect = wall.getBoundingClientRect();
-          var rect = el.getBoundingClientRect();
-          el.style.position = "absolute";
-          el.style.margin = "0";
-          el.style.left = (rect.left - wallRect.left + wall.scrollLeft) + "px";
-          el.style.top = (rect.top - wallRect.top + wall.scrollTop) + "px";
-          el.style.right = "auto";
-          el.style.bottom = "auto";
-        }
-
-        var startX = 0, startY = 0, origLeft = 0, origTop = 0, dragging = false;
-
-        function skip(target) {
-          var tag = (target.tagName || "").toLowerCase();
-          return tag === "input" || tag === "select" || tag === "textarea" ||
-                 tag === "button" || tag === "label" || tag === "option";
-        }
-
-        function down(e) {
-          if (skip(e.target)) return;
-          if (e.button !== undefined && e.button !== 0) return;
-
-          var clientX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
-          var clientY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
-
-          startX = clientX;
-          startY = clientY;
-          origLeft = parseFloat(el.style.left) || 0;
-          origTop = parseFloat(el.style.top) || 0;
-          dragging = true;
-          el.classList.add("dragging");
-          e.preventDefault();
-        }
-
-        function move(e) {
-          if (!dragging) return;
-          var clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : startX);
-          var clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : startY);
-          el.style.left = (origLeft + clientX - startX) + "px";
-          el.style.top = (origTop + clientY - startY) + "px";
-          e.preventDefault();
-        }
-
-        function up() {
-          if (!dragging) return;
-          dragging = false;
-          el.classList.remove("dragging");
-          savePositions();
-        }
-
-        el.addEventListener("mousedown", down);
-        el.addEventListener("touchstart", down, { passive: false });
-        window.addEventListener("mousemove", move);
-        window.addEventListener("touchmove", move, { passive: false });
-        window.addEventListener("mouseup", up);
-        window.addEventListener("touchend", up);
-      })(posters[i]);
+      setupOne(posters[i], wall);
     }
+  }
+
+  function setupOne(el, wall) {
+    var startX = 0, startY = 0, origLeft = 0, origTop = 0, dragging = false;
+
+    function isForm(target) {
+      var tag = (target.tagName || "").toLowerCase();
+      return tag === "input" || tag === "select" || tag === "textarea" ||
+             tag === "button" || tag === "label" || tag === "option";
+    }
+
+    // always turn the note into inline absolute the first time we touch it
+    function ensureAbsolute() {
+      if (el.style.left && el.style.top) {
+        return {
+          left: parseFloat(el.style.left) || 0,
+          top: parseFloat(el.style.top) || 0
+        };
+      }
+      var wallRect = wall.getBoundingClientRect();
+      var rect = el.getBoundingClientRect();
+      var left = rect.left - wallRect.left + wall.scrollLeft;
+      var top = rect.top - wallRect.top + wall.scrollTop;
+      el.style.position = "absolute";
+      el.style.margin = "0";
+      el.style.left = left + "px";
+      el.style.top = top + "px";
+      el.style.right = "auto";
+      el.style.bottom = "auto";
+      // keep whatever rotation the CSS gave it
+      return { left: left, top: top };
+    }
+
+    function onDown(e) {
+      if (isForm(e.target)) return;
+      if (e.type === "mousedown" && e.button !== 0) return;
+
+      var pos = ensureAbsolute();
+      var clientX = e.clientX != null ? e.clientX : e.touches[0].clientX;
+      var clientY = e.clientY != null ? e.clientY : e.touches[0].clientY;
+
+      startX = clientX;
+      startY = clientY;
+      origLeft = pos.left;
+      origTop = pos.top;
+      dragging = true;
+      el.classList.add("dragging");
+      e.preventDefault();
+    }
+
+    function onMove(e) {
+      if (!dragging) return;
+      var clientX = e.clientX != null ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : startX);
+      var clientY = e.clientY != null ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : startY);
+      el.style.left = (origLeft + clientX - startX) + "px";
+      el.style.top = (origTop + clientY - startY) + "px";
+      e.preventDefault();
+    }
+
+    function onUp() {
+      if (!dragging) return;
+      dragging = false;
+      el.classList.remove("dragging");
+      savePositions();
+    }
+
+    el.addEventListener("mousedown", onDown);
+    el.addEventListener("touchstart", onDown, { passive: false });
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchend", onUp);
   }
 
   function savePositions() {
